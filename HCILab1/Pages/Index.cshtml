@@ -1,0 +1,92 @@
+﻿@page
+@model HCILab1.Pages.IndexModel
+@{
+    ViewData["Title"] = "Message App";
+}
+
+<h1>Message App</h1>
+
+<div>
+    <label asp-for="EnterMessage">Enter a Message:</label>
+    <input asp-for="EnterMessage" />
+    <button type="button" onclick="showMessage()">Show Message</button>
+</div>
+<br />
+
+<div>
+    <button type="button" onclick="setDefaultMessage('This is my default message')">Default Message 1</button>
+    <button type="button" onclick="setDefaultMessage('This is another default message')">Default Message 2</button>
+</div>
+<br />
+
+<div>
+    <select id="actionSelect">
+        <option value="ClearField">Clear field</option>
+        <option value="CopyText">Copy text</option>
+        <option value="PasteText">Paste text</option>
+    </select>
+    <button type="button" onclick="executeAction()">Execute</button>
+</div>
+<br />
+
+<div>
+    <button type="button" onclick="getIpAddress()">Get IP Address</button>
+</div>
+<br />
+
+<div>
+    <button type="button" onclick="exitApp()">Exit</button>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <script>alert('@Model.Message');</script>
+}
+
+<script>
+    function setDefaultMessage(message) {
+        document.getElementById('EnterMessage').value = message;
+    }
+
+    function executeAction() {
+        var selectElement = document.getElementById('actionSelect');
+        var action = selectElement.options[selectElement.selectedIndex].value;
+
+        switch (action) {
+            case "ClearField":
+                document.getElementById('EnterMessage').value = "";
+                break;
+            case "CopyText":
+                var input = document.getElementById('EnterMessage');
+                input.select();
+                document.execCommand("copy");
+                input.setSelectionRange(0, 0);
+                break;
+            case "PasteText":
+                navigator.clipboard.readText()
+                    .then(function (text) {
+                        document.getElementById('EnterMessage').value = text;
+                    })
+                    .catch(function (error) {
+                        console.error('Failed to read clipboard contents: ', error);
+                    });
+                break;
+        }
+    }
+
+    function showMessage() {
+        var message = document.getElementById('EnterMessage').value;
+        alert(message);
+    }
+
+    function getIpAddress() {
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => alert('IP Address: ' + data.ip))
+            .catch(error => console.error('Failed to get IP address: ', error));
+    }
+
+    function exitApp() {
+        window.close();
+    }
+</script>
